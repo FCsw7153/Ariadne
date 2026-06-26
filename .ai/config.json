@@ -1,0 +1,13 @@
+{
+  "name": "ariadne",
+  "displayName": "Ariadne",
+  "positioning": "A lightweight AI coding framework and method pack for improving agent task reliability.",
+  "metaphor": "Ariadne's thread for complex AI coding tasks.",
+  "defaultWorkflow": "progressive-depth",
+  "levels": ["discussion", "fast-path", "spec-path", "deep-path"],
+  "automation": {
+    "hooks": "optional",
+    "repoMap": "optional",
+    "subagents": "optional"
+  }
+}
