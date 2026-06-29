@@ -1,0 +1,15 @@
+{
+  "name": "target-project",
+  "displayName": "Target Project",
+  "ariadne": {
+    "mode": "embedded",
+    "version": "template"
+  },
+  "defaultWorkflow": "progressive-depth",
+  "levels": ["discussion", "fast-path", "spec-path", "deep-path"],
+  "automation": {
+    "hooks": "optional",
+    "repoMap": "optional",
+    "subagents": "optional"
+  }
+}

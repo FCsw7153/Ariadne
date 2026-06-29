@@ -23,6 +23,18 @@ The name comes from Ariadne's thread: a guide through complex paths, long contex
 - Not a requirement to create artifacts for every small task.
 - Not a source of final truth for project contracts; use `.ai/spec/` for that.
 
+## Initialize Ariadne In A Project
+
+Ariadne currently provides a template-based init layer, not a packaged CLI.
+
+From the Ariadne repository root:
+
+```bash
+./scripts/init.sh /path/to/target-project
+```
+
+The init script copies missing files only and does not overwrite existing project files. See `templates/init/README.md` for embedded and external workspace modes.
+
 ## Quickstart For Agents
 
 1. Read `AGENTS.md`.
