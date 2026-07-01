@@ -19,12 +19,14 @@ It is optional. Use it when the project grows large enough that agents need a co
 | `CLAUDE.md` | Claude-specific pointer file |
 | `.agents/skills/` | On-demand method skills |
 | `.ai/workflow.md` | Progressive workflow rules |
+| `.ai/hooks/` | Required deterministic guardrail hooks |
+| `.ai/scripts/` | Ariadne task, checkpoint, validation, and doctor commands |
+| `.ai/state/` | Lightweight runtime state such as the active task pointer |
 | `.ai/templates/` | Task and sub-agent templates |
 | `.ai/tasks/` | Level 2/3 task workspaces |
 | `.ai/agents/` | Sub-agent delegation protocol |
 | `.ai/memory/` | Pending and accepted memory |
 | `.ai/spec/` | Authoritative project constraints |
-| `.ai/hooks/` | Optional deterministic guardrail notes |
 
 ## Future Repo Map Shape
 

@@ -12,6 +12,7 @@ Keep it concise. This file is a decision and recovery aid, not a transcript.
 - Status: planning | in-progress | blocked | verifying | complete | deferred
 - Owner: main agent | sub-agent role | human
 - User override: none | fast path | no sub-agents | use sub-agents | skip artifacts | other
+- Active task state: not-started | active | cleared | degraded-mode
 
 ## Intent
 
@@ -79,7 +80,11 @@ Small, ordered steps. Update when the plan changes materially.
 
 ## Sub-Agent Handoffs
 
-Use this section when delegation happens. Link to separate artifacts if the task grows.
+Every Level 2/3 task must record a sub-agent decision before substantive implementation: delegated, not useful, unavailable in this host, disabled by user, or disabled by host/system instruction. Link to separate artifacts if delegation happens and the task grows.
+
+- Sub-agent decision: pending | delegated | not-useful | unavailable-in-host | disabled-by-user | disabled-by-system-instruction
+- Rationale:
+- No-interrupt rule: wait-or-queue by default; interrupt only for explicit redirect, off-scope harmful work, wrong context, unsafe behavior, or resource control.
 
 | Role | Goal | Artifact / Output | Status |
 | --- | --- | --- | --- |
@@ -95,6 +100,14 @@ Required return shape:
 - Residual risks.
 - Decisions needed.
 
+### Interrupt Log
+
+Every sub-agent interrupt must be recorded. Leave empty when no interrupt happened.
+
+| Time | Agent | Reason | Evidence | Replacement Instruction | Follow-up |
+| --- | --- | --- | --- | --- | --- |
+|  |  |  |  |  |  |
+
 ## Decisions
 
 Record decisions that affect implementation, scope, verification, or future maintenance.
@@ -108,6 +121,14 @@ Record decisions that affect implementation, scope, verification, or future main
 Concise notes about what changed and why. Avoid dumping raw diffs.
 
 - 
+
+## Checkpoints
+
+Compact recovery and long-task checkpoints belong here or in `checkpoints/`.
+
+| Checkpoint | Trigger | Notes |
+| --- | --- | --- |
+|  |  |  |
 
 ## Verification Evidence
 
@@ -142,7 +163,9 @@ Do not silently mark the task complete. When the agent believes the task is done
 
 ## Memory / Spec Candidates
 
-Only list information likely to matter for future tasks. These candidates should be captured in `.ai/memory/pending-memory.md`, usually by the main agent or a memory-capture sub-agent.
+Only list information likely to matter for future tasks. These candidates should be captured in `.ai/memory/pending-memory.md`, usually by the main agent or a memory-capture sub-agent. At completion, record captured candidates or explicitly state that there are no durable candidates.
+
+- Memory decision: pending | captured-to-pending-memory | no-durable-candidates | deferred
 
 - 
 

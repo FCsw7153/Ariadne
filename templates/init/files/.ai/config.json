@@ -8,7 +8,7 @@
   "defaultWorkflow": "progressive-depth",
   "levels": ["discussion", "fast-path", "spec-path", "deep-path"],
   "automation": {
-    "hooks": "optional",
+    "hooks": "required",
     "repoMap": "optional",
     "subagents": "optional"
   }

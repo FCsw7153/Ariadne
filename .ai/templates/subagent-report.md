@@ -52,6 +52,14 @@ Known gaps, uncertainty, skipped checks, or limitations.
 
 - 
 
+## Interrupts / Redirects
+
+Record any interruption or replacement instruction observed by the sub-agent.
+
+| Time | Source | Instruction / Effect | Notes |
+| --- | --- | --- | --- |
+|  |  |  |  |
+
 ## Decisions Needed
 
 Questions or decisions that require the main agent or user.

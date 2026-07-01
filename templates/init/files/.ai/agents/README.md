@@ -6,6 +6,8 @@ The main agent remains the orchestrator: it talks with the user, frames the task
 
 Sub-agents do focused work: research, implementation, review, verification, documentation, or memory/spec updates. Their job is to return decision-grade artifacts that help the main agent decide safely.
 
+The default coordination rule is no interrupt: once dispatched, a sub-agent should be allowed to finish its turn. The main agent should wait for completion or queue a message unless a documented exception applies.
+
 ## Core Model
 
 ```text
@@ -67,6 +69,7 @@ After delegation, the main agent must:
 - Inspect enough evidence to trust or reject the result.
 - Resolve or escalate open decisions.
 - Decide whether to accept, ask for repair, run review, or report a blocker.
+- Avoid interrupting the sub-agent except under the No-Interrupt Rule exceptions.
 - Produce the final user-facing summary.
 
 ## Sub-Agent Responsibilities
@@ -87,6 +90,35 @@ A sub-agent should not:
 - Spawn more sub-agents unless the main agent explicitly authorizes recursive delegation.
 - Edit outside allowed areas.
 - Hide failed checks or uncertain results.
+
+## No-Interrupt Rule
+
+Sub-agent interruption is an exceptional recovery path, not normal project management.
+
+Default behavior:
+
+- Let the sub-agent complete its current turn.
+- Use host wait/status mechanisms for progress.
+- Use queued messages for non-urgent additional context.
+- Do not interrupt for impatience, routine status checks, minor clarifications, or low-priority hints.
+
+Allowed interrupt reasons:
+
+- The user explicitly asks to stop or redirect the worker.
+- The worker is clearly off-scope and continued work will produce bad output.
+- The handoff context is wrong enough that continued work is harmful.
+- The worker is attempting unsafe, destructive, or unauthorized behavior.
+- Resource usage is out of control.
+
+Required interrupt record:
+
+- Reason.
+- Evidence.
+- Replacement instruction.
+- Affected agent.
+- Follow-up action.
+
+Record interrupts in the task artifact's Interrupt Log or in a linked report. If a host only supports hard termination, record the same fields plus any recovery steps needed before re-delegation.
 
 ## Single-Writer Rule
 
@@ -192,7 +224,7 @@ Re-delegate when:
 - Validation fails.
 - The report identifies a decision that the main agent/user resolves.
 
-Do not loop forever. If the same issue repeats, stop and re-plan or escalate to the user.
+Do not interrupt and re-delegate as a routine repair loop. If the same issue repeats, stop and re-plan or escalate to the user.
 
 ## Platform Neutrality
 

@@ -38,9 +38,11 @@ Routing Decision
 - Task workspace: none | optional | recommended | required
 - Clarification: none | ask now | defer until after baseline read
 - Baseline read: none | minimal | focused | broad
-- Sub-agents: none | optional | recommended
+- Sub-agents: none | decision required | recommended | unavailable
 - Required artifacts: <none or list>
+- Hooks: not needed | required | degraded mode
 - Verification: <expected evidence>
+- Memory: not applicable | capture if discovered | final decision required
 - Next action: <what to do immediately>
 ```
 
@@ -137,22 +139,31 @@ Default behavior:
 1. Frame intent, success criteria, non-goals, constraints, and risks.
 2. Ask only necessary clarification questions.
 3. Read focused baseline facts before implementation.
-4. Create or update a compact task artifact when useful.
-5. Decide whether implementation/review/research should be delegated.
-6. Implement or delegate within the approved scope.
-7. Verify with evidence before reporting completion.
+4. Create or update a compact task artifact before substantive implementation unless the user explicitly skips artifacts.
+5. Set the active task with `.ai/scripts/ariadne-task.sh start <task>` or record degraded mode if hooks/scripts are unavailable.
+6. Decide whether implementation/review/research should be delegated and record the decision.
+7. Implement or delegate within the approved scope.
+8. Verify with evidence before reporting completion.
+9. Record memory candidates or `No durable memory candidates`.
 
 Task workspace:
 
-- Recommended when the work needs persistent context, multiple steps, or sub-agent handoff.
+- Required unless the user explicitly skips artifacts.
 - Use `.ai/tasks/<date>-<short-name>/task.md` as the default single-file artifact.
 - Split into `intent.md`, `spec.md`, `plan.md`, `evidence.md`, or `decisions.md` only when it improves clarity.
 
 Sub-agents:
 
-- Optional but often useful.
+- Decision required: delegate, not useful, unavailable, or disabled by user.
 - Recommended for implementation when the main agent should stay focused on user alignment, decisions, and final acceptance.
 - Recommended for fresh review when correctness matters.
+- Do not interrupt sub-agents by default. Wait for completion or queue a message unless there is explicit user redirect, harmful off-scope work, wrong context, unsafe behavior, or resource control.
+
+Hooks:
+
+- Required for complete Ariadne installs.
+- If the host cannot run hooks or equivalent command/prompt injection, record degraded mode and residual risk.
+- For Level 2/3 implementation, active task state should be set before code changes.
 
 Verification:
 
@@ -200,9 +211,17 @@ Task workspace:
 
 Sub-agents:
 
-- Recommended.
+- Recommended by default when the host provides native sub-agents.
 - Use them for context-heavy research, implementation, validation, noisy logs, or fresh review.
 - Require decision-grade returns: readset, facts, findings/changes, evidence, risks, and decisions needed.
+- If the host has no sub-agent mechanism, record `unavailable in this host`.
+- Do not interrupt sub-agents by default. Wait for completion or queue a message unless the No-Interrupt Rule exception is met.
+
+Hooks:
+
+- Required for complete Ariadne installs.
+- Use active task state, workflow-state injection, and compact checkpoints.
+- If unavailable, record degraded mode and manual recovery steps.
 
 Verification:
 
@@ -248,9 +267,13 @@ Record the baseline readset for Level 2 when useful and for Level 3 by default.
 
 ## Sub-Agent Routing Rules
 
+For Level 2 and Level 3, record a sub-agent decision before implementation.
+
 Use sub-agents when they improve context isolation, parallelism, implementation focus, research depth, or fresh review.
 
 Do not use sub-agents just to create ceremony.
+
+Do not interrupt sub-agents by default. The main agent should wait for completion or queue a message unless the user explicitly redirects, the worker is clearly harmful/off-scope, context is wrong, behavior is unsafe, or resources are out of control. Record every interrupt in the task artifact.
 
 The main agent remains responsible for:
 
@@ -275,6 +298,8 @@ Use a single task artifact for:
 
 - Most Level 2 tasks.
 - Work that needs a compact durable handoff.
+
+Unless the user explicitly skips artifacts, Level 2 tasks must have at least the single task artifact before substantive implementation.
 
 Split artifacts for:
 

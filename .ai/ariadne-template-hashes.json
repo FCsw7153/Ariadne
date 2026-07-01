@@ -1,0 +1,27 @@
+{
+  "__version": 1,
+  "hashes": {
+    ".agents/skills/baseline-first/SKILL.md": "a12439d5cdfaef45a09511e640a778f19dd0b7899733993cdd467c02762e0b78",
+    ".agents/skills/goal-framing/SKILL.md": "dbb903402eef34f379cf89e7c2e1e3bc382a1307866ef3f0a0de03a9b9a5e549",
+    ".agents/skills/memory-capture/SKILL.md": "eb542834a1cef449d28d60a7ec902f3abd50447743ed871310b93e425a653f27",
+    ".agents/skills/requirements-clarification/SKILL.md": "1c58b52a9460285407699ade93cc626cf43f3f197a504e111e5e89fa8ecfdbbc",
+    ".agents/skills/spec-writer/SKILL.md": "e9368cad1eeceb7fec3b4673c80776d9ac01fafcf01160667c4557b8ec5ed802",
+    ".agents/skills/task-router/SKILL.md": "fb5627a4bcab10cabc3d44e368811881f221de1dacd958bd97fec601b090a11c",
+    ".agents/skills/update-memory/SKILL.md": "42fbd40b185be4b4fd652507cd620b171e847fd3f6089c08fb6662c2cd75193a",
+    ".agents/skills/verification/SKILL.md": "f840932a95e24cd3b95fb871fccf75fd1b9956dbdcecd7a467ac331030c0d30b",
+    ".ai/agents/README.md": "93fe8c3114f6d97558302b45c20283744dac454286ebc273d1a819c757ad37bd",
+    ".ai/hooks/README.md": "63fa627eb084fb55cbb711b554b5469b7e6586b126426e469fcbce61cdaa9c7b",
+    ".ai/hooks/inject-workflow-state.py": "8ab009bd35730a8b8e6b80218a0c756f7c6aafbc3e988900e50105e4b3aebb21",
+    ".ai/hooks/post-compact-restore.py": "e7daa6bf7685f90f66fe2c0aede231ecb219a82873e066cedb21a1278663bc52",
+    ".ai/hooks/pre-compact-save.py": "98460a6ef58c8f4484fe1700ccad21ce8793c69ff2f5311c3b9559781c322ac3",
+    ".ai/memory/README.md": "eb95a551091f28ef8846bebcf7ce6058305632777a36a164488dea9e091a6aec",
+    ".ai/scripts/ariadne-doctor.sh": "78c5b3136fa82acc374e4c2b87d88256d4b642419f97bf0f86701260aee5941d",
+    ".ai/scripts/ariadne-task.sh": "7098a57862e520290031fc943101ebd967a1674db1bd703c337aaa97198c7b27",
+    ".ai/scripts/ariadne-update.sh": "7e9cef83979e77330ce36d9eab0219e9448fe79f212cbc644e4b298b9d30c178",
+    ".ai/state/README.md": "c861906e68be9eefab024b9cb514a0fa0b3395186492d8c743a7d17188921803",
+    ".ai/templates/subagent-handoff.md": "9bfac1dae28da82059b7f3878dbe35792382818381dd45fca1198a02f8c4d5e4",
+    ".ai/templates/subagent-report.md": "67752c35f74b749ae481b93e84cccf46797b5d8067da2e7db187ea8a6c8487cd",
+    ".ai/templates/task.md": "b342222cac836c71cc2887841a20d02e1799caacd0f5efb2fc39b9986b1262e5",
+    ".ai/workflow.md": "6c21a8619d5cc36f47ac56c35bc2879d79d94d37f3bba67e87c6856a763fdf2c"
+  }
+}

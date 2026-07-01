@@ -63,6 +63,13 @@ Commands, tests, manual checks, or review criteria expected from the sub-agent.
 
 - 
 
+## Coordination Rules
+
+- The main agent should wait for this sub-agent to complete or queue non-urgent messages.
+- The main agent should not interrupt this sub-agent for status checks, impatience, minor clarifications, or low-priority hints.
+- Interrupt is allowed only for explicit user redirect, harmful off-scope work, wrong handoff context, unsafe/destructive behavior, or resource control.
+- If interrupted, the main agent must record reason, evidence, replacement instruction, affected agent, and follow-up action in the task artifact.
+
 ## Output Requirements
 
 The sub-agent must return decision-grade output with:
@@ -94,6 +101,7 @@ Stop and report instead of guessing when:
 - Validation fails in a way that changes the plan.
 - The requested change would touch forbidden areas.
 - The sub-agent cannot produce meaningful evidence.
+- You are asked to continue after an interrupt but the replacement instruction conflicts with this handoff.
 
 ## Final Instruction
 

@@ -1,39 +1,67 @@
 # Hooks
 
-Hooks are optional deterministic guardrails.
+Hooks are Ariadne's required deterministic guardrail layer for complete
+installations.
 
-Ariadne should work without hooks. Add hooks only after the manual workflow proves useful and the rule is deterministic enough to automate.
+Ariadne still keeps its core platform-neutral: hosts may wire these scripts
+through native hooks, commands, prompts, or another equivalent injection
+mechanism. If a host has no hook-like mechanism, Ariadne runs in degraded mode
+and the agent must say so before Level 2/3 work.
 
-## Appropriate Hook Uses
+## Required Hooks
 
-Good hooks:
-
-- Save task state before context compaction.
-- Restore minimal task context after compaction.
-- Guard protected files or dangerous commands.
-- Remind agents to record verification evidence.
-- Inject compact project/task context.
-- Warn when a Level 2/3 task appears complete but closure has not been confirmed by the user.
-
-Bad hooks:
-
-- Complex product reasoning.
-- Automatic long-term memory promotion.
-- Silent task archival.
-- Hidden implementation changes.
-- Platform-specific behavior in generic method docs.
-
-## Candidate Hooks
-
-| Hook | Purpose | Status |
+| Hook | Purpose | Script |
 | --- | --- | --- |
-| pre-compact-save | Save task, decisions, modified files, and open questions | idea |
-| post-compact-inject | Restore minimal current task context | idea |
-| pre-tool-guard | Warn or block protected files/actions | idea |
-| stop-verification | Remind agent not to claim completion without evidence | idea |
-| task-closure-reminder | Ask user before completing/archiving task | idea |
-| pending-memory-capture | Suggest memory capture for durable candidates | idea |
+| workflow-state injection | Print the active task and current workflow state every turn | `.ai/hooks/inject-workflow-state.py` |
+| pre-compact save | Save a task checkpoint before context compression and add a pending-memory candidate | `.ai/hooks/pre-compact-save.py` |
+| post-compact restore | Restore active task and latest checkpoint after context compression | `.ai/hooks/post-compact-restore.py` |
 
-## Rule
+## Script Contracts
 
-Hooks may enforce deterministic guardrails, but strategic decisions remain with the main agent and user.
+### `inject-workflow-state.py`
+
+- Reads `.ai/state/current-task`.
+- Reads the task status from `task.md`.
+- Parses `[workflow-state:<status>]` blocks from `.ai/workflow.md`.
+- Prints a compact `<workflow-state>` block.
+- Does not write files.
+
+### `pre-compact-save.py`
+
+- Reads the active task pointer.
+- Writes `.ai/tasks/<task>/checkpoints/compact-YYYYMMDD-HHMMSS.md`.
+- Appends a task-sourced candidate to `.ai/memory/pending-memory.md`.
+- Does not promote memory, archive tasks, commit files, or edit implementation code.
+
+### `post-compact-restore.py`
+
+- Reads the active task pointer.
+- Reads the latest compact checkpoint if present.
+- Prints a compact `<ariadne-compact-restore>` block.
+- Does not write files.
+
+## Degraded Mode
+
+If hooks cannot run, the agent must:
+
+- State that Ariadne is running in degraded mode.
+- Use `.ai/scripts/ariadne-task.sh current`, `checkpoint`, and `validate`
+  manually when relevant.
+- Record the residual risk in the task artifact.
+
+## Rules
+
+- Hooks may enforce deterministic guardrails, but strategic decisions remain
+  with the main agent and user.
+- Hooks must not perform product reasoning.
+- Hooks must not auto-commit, auto-archive, or rewrite git history.
+- Hooks must not silently change implementation files.
+- Long-term memory/spec updates still require deliberate consolidation.
+
+## Optional Future Hooks
+
+| Hook | Purpose |
+| --- | --- |
+| pre-tool-guard | Warn or block protected files/actions |
+| stop-verification | Remind agents not to claim completion without evidence |
+| task-closure-reminder | Ask user before completing/archiving task |

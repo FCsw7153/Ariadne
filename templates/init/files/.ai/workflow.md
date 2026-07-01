@@ -2,7 +2,7 @@
 
 Ariadne uses progressive depth: make hard AI coding tasks safer without making easy tasks slow.
 
-The workflow is platform-neutral. It defines when to clarify, when to create task artifacts, when to delegate to sub-agents, and what evidence is needed before claiming completion. The host environment decides how commands, skills, hooks, and sub-agents are actually executed.
+The workflow is platform-neutral. It defines when to clarify, when to create task artifacts, when to delegate to sub-agents, and what evidence is needed before claiming completion. Complete Ariadne installations require hooks or an equivalent host mechanism for workflow-state injection and compact recovery; hosts without hooks run in degraded mode.
 
 ## Core Principle
 
@@ -18,10 +18,12 @@ classify task
 → ask only necessary questions
 → read baseline facts
 → choose artifact depth
+→ set active task for Level 2/3 work
 → plan implementation
 → delegate when useful
 → implement narrowly
 → verify with evidence
+→ validate task artifact
 → update durable memory when useful
 ```
 
@@ -31,8 +33,53 @@ classify task
 | --- | --- | --- | --- | --- | --- |
 | 0 | Discussion | Questions, critique, naming, planning conversation | No | No | Reasoned answer |
 | 1 | Fast Path | Small low-risk edits or narrow answers | No by default | Usually no | Minimal check or explanation |
-| 2 | Spec Path | Normal features, refactors, multi-file changes | Recommended when useful | Optional/recommended for implementation or review | Required |
-| 3 | Deep Path | High-risk, ambiguous, architectural, security, migration, persistent bugs, long tasks | Yes unless user opts out | Recommended | Strong evidence + review |
+| 2 | Spec Path | Normal features, refactors, multi-file changes | Required unless user opts out | Decision required; delegate when useful | Required |
+| 3 | Deep Path | High-risk, ambiguous, architectural, security, migration, persistent bugs, long tasks | Required unless user opts out | Recommended by default when available | Strong evidence + review |
+
+## Runtime State And Hooks
+
+Complete Ariadne installs use a small runtime state layer:
+
+- `.ai/state/current-task` stores the active task workspace path.
+- `.ai/ariadne-version` records the installed Ariadne template version.
+- `.ai/ariadne-template-hashes.json` records hashes for managed template files that can be safely updated.
+- `.ai/scripts/ariadne-task.sh start <task>` sets the active task and marks it `in-progress` when possible.
+- `.ai/scripts/ariadne-task.sh checkpoint <task>` writes a recovery checkpoint.
+- `.ai/scripts/ariadne-task.sh validate <task>` checks closure readiness.
+- `.ai/scripts/ariadne-update.sh` updates managed Ariadne files while preserving user edits and protected project data.
+- `.ai/scripts/ariadne-doctor.sh` checks that guardrails are installed.
+
+Required hooks or equivalent host mechanisms:
+
+- `inject-workflow-state.py` runs every turn to remind the agent of the active task and workflow state.
+- `pre-compact-save.py` runs before context compaction to save a checkpoint and pending-memory candidate.
+- `post-compact-restore.py` runs after context compaction to restore the latest task checkpoint.
+
+If hooks are unavailable, the agent must state degraded mode, run the scripts manually when relevant, and record the residual risk in the task artifact.
+
+## Workflow-State Blocks
+
+Hooks parse these blocks as the single source of truth for compact per-turn guidance. Keep them short and deterministic.
+
+[workflow-state:no_task]
+No active task. Classify the request first. Level 0/1 should stay lightweight and should not create task artifacts by default. For Level 2/3, create or update a task artifact before substantive implementation, then run `.ai/scripts/ariadne-task.sh start <task>`.
+[/workflow-state:no_task]
+
+[workflow-state:planning]
+Active task is planning. Finish intent, success criteria, non-goals, constraints, baseline readset, compact plan/spec, and sub-agent decision before implementation. Ask only high-value questions. Do not edit implementation files until the task artifact is decision-ready.
+[/workflow-state:planning]
+
+[workflow-state:in-progress]
+Active task is in progress. Follow the task plan narrowly, keep evidence in the task artifact, and use hooks/scripts for checkpoints. If sub-agents are running, wait or queue messages; do not interrupt unless the No-Interrupt Rule allows it.
+[/workflow-state:in-progress]
+
+[workflow-state:verifying]
+Active task is verifying. Map success criteria to evidence, run focused checks, update verification evidence, changed files, residual risks, and memory decision. Do not claim completion without fresh evidence.
+[/workflow-state:verifying]
+
+[workflow-state:blocked]
+Active task is blocked or stale. Read `task.md` and the latest checkpoint, identify the blocker, and ask or repair only the specific missing decision/evidence. Do not continue broad implementation from memory.
+[/workflow-state:blocked]
 
 ## Escalation Triggers
 
@@ -105,7 +152,7 @@ Use for standard features, meaningful refactors, multi-file changes, behavior ch
 
 Artifacts:
 
-- Recommended single-file task artifact: `.ai/tasks/<date>-<short-name>/task.md`.
+- Required single-file task artifact unless the user explicitly opts out: `.ai/tasks/<date>-<short-name>/task.md`.
 - Split into separate files only when useful: `intent.md`, `spec.md`, `plan.md`, `evidence.md`, `decisions.md`.
 
 Agent behavior:
@@ -113,17 +160,22 @@ Agent behavior:
 1. Frame intent, success criteria, non-goals, constraints, and risks.
 2. Ask only the few clarification questions needed to prevent wrong implementation.
 3. Read baseline project facts and record the useful readset.
-4. Write or update a compact spec/plan before implementation when scope is non-trivial.
-5. Delegate implementation, review, or focused research when it improves context isolation or quality.
-6. Integrate sub-agent outputs and make final decisions in the main session.
-7. Verify with evidence before reporting completion.
+4. Write or update a compact task artifact with the PRD/spec/plan before substantive implementation.
+5. Run `.ai/scripts/ariadne-task.sh start <task>` or record degraded mode if hooks/scripts are unavailable.
+6. Record an explicit sub-agent decision: delegated, not useful, unavailable, disabled by user, or disabled by host/system instruction.
+7. Delegate implementation, review, or focused research when it improves context isolation or quality.
+8. Integrate sub-agent outputs and make final decisions in the main session.
+9. Verify with evidence before reporting completion.
+10. Record memory candidates or `No durable memory candidates`.
 
 Sub-agent guidance:
 
 - Use an implementation sub-agent when the main session should stay focused on user alignment and decisions.
 - Use a research sub-agent when exploration would produce noisy context.
 - Use a review sub-agent when fresh context can catch mistakes.
+- If the host has no sub-agent mechanism, record that as the sub-agent decision.
 - Require decision-grade return artifacts: readset, key facts, changes/findings, evidence, risks, and decisions needed.
+- Do not interrupt sub-agents by default. Wait for completion or queue a message unless the No-Interrupt Rule allows an exceptional interrupt.
 
 Verification:
 
@@ -161,11 +213,12 @@ Agent behavior:
 3. Ask high-value clarification questions before locking scope.
 4. Build a baseline readset from code, docs, tests, specs, logs, and prior task artifacts.
 5. Write a spec and plan that are concrete enough for a sub-agent handoff.
-6. Delegate research, implementation, and/or review to sub-agents when useful.
-7. Keep the main session focused on orchestration, decisions, scope control, and user communication.
-8. Record checkpoints for long tasks or context-boundary risk.
-9. Verify with strong evidence and fresh review when possible.
-10. Update durable memory/spec only with information likely to matter again.
+6. Run `.ai/scripts/ariadne-task.sh start <task>` or record degraded mode if hooks/scripts are unavailable.
+7. Delegate research, implementation, and/or review to sub-agents when useful.
+8. Keep the main session focused on orchestration, decisions, scope control, and user communication.
+9. Record checkpoints for long tasks or context-boundary risk.
+10. Verify with strong evidence and fresh review when possible.
+11. Update durable memory/spec only with information likely to matter again.
 
 Sub-agent guidance:
 
@@ -173,6 +226,27 @@ Sub-agent guidance:
 - Do not let sub-agents make unapproved product, architecture, or scope decisions.
 - Require artifact paths or structured summaries, not raw chat dumps.
 - The main agent must inspect enough evidence to accept or reject the sub-agent output.
+- Do not interrupt sub-agents by default. Wait for completion or queue a message unless the No-Interrupt Rule allows an exceptional interrupt.
+
+## No-Interrupt Rule
+
+Once dispatched, a sub-agent should be allowed to complete its turn.
+
+Default:
+
+- Wait for completion.
+- Use queued messages for low-priority additions or clarifications.
+- Use status/wait mechanisms for progress, if the host provides them.
+
+Interrupt only when:
+
+- The user explicitly asks to stop or redirect the sub-agent.
+- The sub-agent is clearly off-scope and continued work will produce bad output.
+- The handoff context is wrong enough that continued work is harmful.
+- The sub-agent is attempting unsafe, destructive, or unauthorized behavior.
+- Resource usage is out of control.
+
+Every interrupt must be recorded in the task artifact with reason, evidence, replacement instruction, affected agent, and follow-up action.
 
 Verification:
 

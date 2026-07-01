@@ -1,102 +1,105 @@
 <!-- ARIADNE:START -->
 # Ariadne Agent Instructions
 
-These instructions are for AI coding agents working in this repository.
+These instructions are for AI coding agents working in this repository with Ariadne.
 
-Ariadne is a lightweight, portable AI coding framework that helps agents complete tasks more reliably without becoming a heavy coding platform.
+Ariadne is a lightweight AI coding method pack. It keeps small tasks fast and makes complex tasks explicit, recoverable, delegated when useful, memory-aware, and evidence-verified.
 
-The always-loaded entry rules should stay short. Detailed procedures belong in `.agents/skills/`, `.ai/workflow.md`, or task artifacts.
+Follow this file as the always-loaded entry protocol. Detailed procedures live in `.agents/skills/`, `.ai/workflow.md`, or task artifacts, but the gates below are mandatory unless the user explicitly overrides them.
 
 ## Working Knowledge Map
 
-The project knowledge you need lives in these places:
-
 - `.ai/workflow.md` — workflow levels, task routing, and default loops.
-- `.ai/config.json` — project identity and high-level configuration.
-- `.agents/skills/` — on-demand skills for routing, clarification, baseline reading, spec writing, and verification.
-- `.ai/templates/` — reusable task and artifact templates.
-- `.ai/spec/` — durable project-level architecture, style, testing, contracts, gotchas, and glossary documents.
-- `.ai/memory/` — stable project memory and recurring decisions that should survive sessions.
-- `.ai/repo-map/` — concise repository maps and baseline readsets when the project grows.
+- `.agents/skills/` — on-demand skills for routing, clarification, baseline reading, spec writing, verification, and memory.
+- `.ai/templates/` — reusable task and sub-agent templates.
 - `.ai/tasks/` — task workspaces for Level 2 and Level 3 work.
-- `.ai/agents/` — optional role definitions and delegation conventions.
-- `.ai/hooks/` — optional deterministic guardrails; hooks are not required for the method to work.
+- `.ai/agents/` — sub-agent delegation conventions.
+- `.ai/scripts/` — deterministic Ariadne task, validation, checkpoint, and doctor commands.
+- `.ai/state/` — lightweight runtime state such as the active task pointer.
+- `.ai/ariadne-version` and `.ai/ariadne-template-hashes.json` — installed version and managed-template hashes for safe updates.
+- `.ai/memory/` — pending and accepted reusable project memory.
+- `.ai/spec/` — durable project-level architecture, style, testing, contracts, gotchas, and glossary documents.
+- `.ai/repo-map/` — concise repository maps and baseline readsets when useful.
+- `.ai/hooks/` — required deterministic guardrails for complete Ariadne installs.
 
 ## Core Operating Rules
 
 - Use the lightest workflow that can safely complete the task.
 - Keep Level 0 and Level 1 tasks fast; do not create artifacts for trivial discussion or small edits unless useful.
-- For non-trivial implementation, separate intent, constraints, plan, implementation, and verification evidence.
+- For non-trivial implementation, separate intent, constraints, plan, implementation, and verification evidence in a task artifact.
 - Read enough project facts before implementation; do not code from assumptions when repo context matters.
 - Ask only high-value clarification questions; do not turn every task into an interview.
+- Use sub-agents when context isolation, implementation focus, research depth, parallelism, or fresh review improves quality.
+- Do not interrupt sub-agents by default. Wait for completion or queue a message unless the user explicitly redirects, the worker is clearly off-scope, context is wrong, behavior is unsafe, or resources are out of control.
 - Do not claim completion without fresh evidence such as tests, commands, review notes, changed files, or explicit manual checks.
 - Do not automatically commit, push, merge, or rewrite git history unless the user explicitly asks.
-- Keep durable rules short. Move specialized methods into skills, templates, or task artifacts.
 
-## Workflow Levels
+## Ariadne Entry Protocol
 
-- Level 0: Discussion, critique, naming, planning, or explanation only. No project artifacts required.
-- Level 1: Small, low-risk edit or narrow answer. No task workspace required by default.
-- Level 2: Standard feature, refactor, multi-file change, or work with meaningful acceptance criteria. Create a task workspace when useful.
-- Level 3: High-risk, ambiguous, architectural, migration, security, persistent bug, or long-running task. Use deeper planning, decisions, checkpoints, review, and delegation when useful.
+- Start every request by classifying it as Level 0, 1, 2, or 3 from `.ai/workflow.md`; for Level 0/1 this may be a one-line internal or user-visible decision.
+- Before Level 2/3 implementation, create or update `.ai/tasks/<date>-<short-name>/task.md` from `.ai/templates/task.md` unless the user explicitly says to skip artifacts.
+- Treat the Level 2/3 task artifact as the PRD/spec/plan record: it must include intent, success criteria, non-goals, constraints, baseline readset, plan, sub-agent decision, verification evidence, and residual risks.
+- If artifacts are skipped by user override, state that override and still keep a minimal plan, verification evidence, and memory decision in the chat or final report.
+- Do not begin substantive Level 2/3 code changes before the baseline readset and compact plan/spec are recorded.
+- For complete Ariadne installs, use `.ai/scripts/ariadne-task.sh start <task>` to set the active task before Level 2/3 implementation and `.ai/scripts/ariadne-task.sh finish` when the task is no longer active.
 
-## Task Workspace Rules
+## Hook Gate
 
-- Use `.ai/tasks/<date>-<short-name>/` for Level 2 or Level 3 tasks that need persistent context.
-- Start from `.ai/templates/task.md` unless a more specific template exists.
-- Persist decisions that affect implementation, scope, verification, or future maintenance.
-- Store evidence in task artifacts instead of relying only on chat history.
-- Keep task artifacts concise; write decision-grade summaries, not raw transcript dumps.
+- Complete Ariadne installations require hooks or an equivalent host mechanism that can inject workflow state, save pre-compact checkpoints, and restore post-compact context.
+- Hosts without hook support run in degraded mode: the agent must say the host is degraded, use the scripts manually, and record the residual risk.
+- Hooks must remain deterministic guardrails. They may read state, write checkpoints, append pending-memory candidates, and print reminders; they must not make product decisions, auto-commit, auto-archive, or silently change implementation files.
+- Before context compaction, run `.ai/hooks/pre-compact-save.py` or an equivalent host hook. After compaction, run `.ai/hooks/post-compact-restore.py` or an equivalent host hook.
+- Use `.ai/hooks/inject-workflow-state.py` or an equivalent per-turn hook to keep the active task and workflow state visible to the agent.
 
-## Sub-Agent Delegation
+## Skill Loading Rules
 
-Use sub-agents when delegation improves context isolation, parallelism, implementation focus, research depth, or fresh review.
+- Use the relevant skill files under `.agents/skills/` when their trigger matches the task.
+- If the host environment has a native skill mechanism, invoke the skill by name.
+- If the host environment has no skill mechanism, read the relevant `.agents/skills/<skill>/SKILL.md` file directly and follow it as instructions.
+- Default skill sequence for Level 2/3 work: `task-router`, `goal-framing`, `baseline-first`, `spec-writer`, `verification`, then `memory-capture` when reusable knowledge appears.
 
-The main agent remains responsible for:
+## Workflow Gates
 
-- User alignment and clarification.
-- Task framing and scope control.
-- Final decisions and tradeoff calls.
-- Acceptance of sub-agent outputs.
-- Final user-facing summary.
+- Level 0: discussion only; no task artifact required.
+- Level 1: small, local, low-risk work; no task artifact required by default.
+- Level 2: normal feature, refactor, behavior change, multi-file change, meaningful bugfix, or non-obvious acceptance criteria; task artifact required unless explicitly skipped.
+- Level 3: architectural, high-risk, ambiguous, security/data/migration/deployment, persistent bug, or long-running work; task workspace required unless explicitly skipped.
+- When in doubt between Level 1 and Level 2, choose Level 2 and write the compact task artifact.
 
-Sub-agents should be given clear scope, constraints, expected artifacts, and evidence requirements. They should return decision-grade artifacts, not only chat summaries.
+## Sub-Agent Gate
 
-A good sub-agent handoff includes:
+- For every Level 2/3 task, make an explicit sub-agent decision before implementation: delegate, or record why delegation is not useful or not available.
+- Use native sub-agents for Level 3 by default when available, especially for research, implementation isolation, verification, or fresh review.
+- For Level 2, use sub-agents when they reduce context load, improve review quality, or let the main agent stay focused on scope and decisions.
+- If the host environment has no sub-agent mechanism, record `Sub-agent decision: unavailable in this host`; if host or system policy disables delegation, record `Sub-agent decision: disabled-by-system-instruction`.
 
-- Goal and non-goals.
-- Relevant task/spec/artifact paths.
-- Allowed and forbidden file areas.
-- Validation expectations.
-- Required output format.
-- Open decisions that must be escalated.
+## No-Interrupt Sub-Agent Rule
 
-A good sub-agent return includes:
+- Once a sub-agent is dispatched, the main agent should wait for its completion or use a queued message for non-urgent additions.
+- Do not interrupt a sub-agent for status checks, impatience, minor clarifications, or low-priority context.
+- Interrupt only when the user explicitly asks, the sub-agent is clearly off-scope, the handoff context is wrong enough to make continued work harmful, the worker is attempting unsafe/destructive behavior, or resource usage is out of control.
+- Every interrupt must be recorded in the task artifact with reason, evidence, replacement instruction, affected agent, and follow-up action.
 
-- Scope completed.
-- Files or sources read.
-- Key facts discovered.
-- Changes made or findings produced.
-- Evidence collected.
-- Residual risks.
-- Decisions needed from the main agent or user.
+## Memory Gate
 
-Use the current environment's native delegation mechanism. Do not reimplement delegation unless the environment has no suitable mechanism.
-
-## Command And Automation Preference
-
-If a host environment provides Ariadne-aware commands, prompts, skills, hooks, or task runners, prefer them over hand-rolled steps when they match the task.
-
-Automation should provide deterministic guardrails, not replace reasoning. Hooks may enforce checks, save context, restore state, or prevent unsafe actions, but strategic decisions remain with the main agent.
+- During Level 2/3 work, capture reusable project knowledge candidates in `.ai/memory/pending-memory.md` using `memory-capture`.
+- At task completion, record either the memory candidates captured or `No durable memory candidates`.
+- Do not write long-term memory/spec updates directly unless the task explicitly includes memory consolidation.
 
 ## First Files To Read
 
-When starting work on Ariadne itself, read:
+When starting work, read:
 
-- `README.md`
 - `.ai/workflow.md`
 - `.ai/config.json`
 - Relevant files under `.agents/skills/` for the task at hand
 
 Managed by Ariadne. Edits outside this block are preserved; edits inside may be overwritten by a future Ariadne updater.
 <!-- ARIADNE:END -->
+
+## Ariadne Framework Repository Notes
+
+- This repository develops Ariadne itself; also read `README.md`, `templates/init/README.md`, and relevant source/template files before changing framework behavior.
+- Keep framework source, init templates, and the current dogfood workspace synced when a change affects installed behavior.
+- Keep project-specific notes outside the Ariadne managed block so `scripts/update.sh` can refresh the block safely.
+- Do not add `.claude`, `.codex`, `.cursor`, `.pi`, or other agent-specific directories to Ariadne core; put platform adapters in a separate adapter layer when needed.

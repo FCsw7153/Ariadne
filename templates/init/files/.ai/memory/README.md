@@ -29,6 +29,8 @@ Capture candidates early, consolidate later.
 
 During conversation, implementation, review, checkpoints, or sub-agent work, useful future knowledge should first go to `pending-memory.md`. Long-term memory, specs, workflow files, or `AGENTS.md` should only be updated through a deliberate consolidation pass.
 
+Compact checkpoints are recovery artifacts, not long-term memory by themselves. The pre-compact hook may add a pending-memory candidate that points to a checkpoint source path, but future agents must review the checkpoint and promote only stable reusable knowledge.
+
 ## Real-Time Capture
 
 Memory candidates may appear while the main task is still active.
@@ -65,6 +67,13 @@ Those destinations require consolidation and main-agent or user acceptance.
 - `Task-Sourced Candidates`: candidates grouped by explicit source task.
 
 Do not attach a candidate to a task by guessing. Use explicit source information when available.
+
+Hook-added compact checkpoint candidates should use:
+
+- Source type: `checkpoint`
+- Source path: the checkpoint under `.ai/tasks/<task>/checkpoints/`
+- Suggested destination: `task` unless the checkpoint clearly contains stable cross-task knowledge
+- Status: `pending`
 
 ## Source Resolution
 
