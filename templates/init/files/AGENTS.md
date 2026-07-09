@@ -31,6 +31,7 @@ Follow this file as the always-loaded entry protocol. Detailed procedures live i
 - Ask only high-value clarification questions; do not turn every task into an interview.
 - Use sub-agents when context isolation, implementation focus, research depth, parallelism, or fresh review improves quality.
 - Do not interrupt sub-agents by default. Wait for completion or queue a message unless the user explicitly redirects, the worker is clearly off-scope, context is wrong, behavior is unsafe, or resources are out of control.
+- For pi sub-agents, do not pass `timeoutMs` or `maxRuntimeMs` unless the user explicitly requests a foreground runtime limit; prefer async/background runs plus status, queued messages, and needs-attention signals.
 - Do not claim completion without fresh evidence such as tests, commands, review notes, changed files, or explicit manual checks.
 - Do not automatically commit, push, merge, or rewrite git history unless the user explicitly asks.
 

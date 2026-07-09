@@ -1,3 +1,8 @@
+---
+name: memory-capture
+description: Capture reusable project knowledge candidates into pending memory during Level 2/3 work. Use when stable preferences, recurring pitfalls, workflow rules, task decisions, or sub-agent memory candidates appear.
+---
+
 # Memory Capture Skill
 
 Use this skill when the agent notices information that may be useful for future tasks while continuing the current work.

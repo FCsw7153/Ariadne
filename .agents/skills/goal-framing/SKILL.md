@@ -1,3 +1,8 @@
+---
+name: goal-framing
+description: Turn broad or non-trivial user requests into decision-grade goals, success criteria, non-goals, constraints, risks, and open questions. Use before planning, delegation, specs, or implementation when success is not obvious.
+---
+
 # Goal Framing Skill
 
 Use this skill when a user request needs to become a clear task before planning, delegation, or implementation.

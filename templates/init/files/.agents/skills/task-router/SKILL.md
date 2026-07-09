@@ -1,3 +1,8 @@
+---
+name: task-router
+description: Classify user requests and choose the lightest safe Ariadne workflow level. Use at task start to decide discussion, fast path, spec path, or deep path, including artifacts, clarification, baseline reading, delegation, and verification needs.
+---
+
 # Task Router Skill
 
 Use this skill to classify a user request and choose the lightest safe Ariadne workflow.

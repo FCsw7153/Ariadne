@@ -1,3 +1,8 @@
+---
+name: baseline-first
+description: Establish the smallest useful baseline readset before meaningful implementation. Use for Level 2/3 tasks, multi-file changes, behavior changes, refactors, root-cause bugfixes, and sub-agent handoffs where repo facts matter.
+---
+
 # Baseline First Skill
 
 Use this skill before meaningful implementation work.

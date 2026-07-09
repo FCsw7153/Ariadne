@@ -1,3 +1,8 @@
+---
+name: requirements-clarification
+description: Ask the smallest number of high-value questions needed to avoid wrong scope or implementation. Use when acceptance criteria, product behavior, tradeoffs, or sub-agent handoff requirements are underspecified.
+---
+
 # Requirements Clarification Skill
 
 Use this skill when the user's request is important but underspecified.

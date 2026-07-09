@@ -8,6 +8,8 @@ Sub-agents do focused work: research, implementation, review, verification, docu
 
 The default coordination rule is no interrupt: once dispatched, a sub-agent should be allowed to finish its turn. The main agent should wait for completion or queue a message unless a documented exception applies.
 
+For pi sub-agents, the default run shape should avoid foreground runtime limits: do not pass `timeoutMs` or `maxRuntimeMs` unless the user explicitly requests a foreground time limit. Prefer `async: true`, status checks when needed, queued follow-up messages, and needs-attention signals for long-running work.
+
 ## Core Model
 
 ```text
@@ -100,6 +102,7 @@ Default behavior:
 - Let the sub-agent complete its current turn.
 - Use host wait/status mechanisms for progress.
 - Use queued messages for non-urgent additional context.
+- For pi sub-agents, do not add `timeoutMs` or `maxRuntimeMs` by default; use async/background runs and needs-attention events instead.
 - Do not interrupt for impatience, routine status checks, minor clarifications, or low-priority hints.
 
 Allowed interrupt reasons:

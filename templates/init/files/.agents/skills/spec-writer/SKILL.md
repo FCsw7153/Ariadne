@@ -1,3 +1,8 @@
+---
+name: spec-writer
+description: Write compact implementation specs for Level 2/3 tasks. Use when non-obvious acceptance criteria, multi-file behavior changes, refactors, bugfixes, or sub-agent handoffs need an explicit contract.
+---
+
 # Spec Writer Skill
 
 Use this skill for Level 2 and Level 3 tasks that need an implementation contract.

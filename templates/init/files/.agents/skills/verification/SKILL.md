@@ -1,3 +1,8 @@
+---
+name: verification
+description: Verify task completion with proportional evidence before claiming done. Use after implementation or analysis to map success criteria to tests, checks, manual review, changed files, residual risks, and completion judgment.
+---
+
 # Verification Skill
 
 Use this skill before claiming a task is complete.

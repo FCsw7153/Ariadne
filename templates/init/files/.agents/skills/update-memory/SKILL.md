@@ -1,3 +1,8 @@
+---
+name: update-memory
+description: Consolidate pending memory candidates into the correct long-term destination. Use when reviewing .ai/memory/pending-memory.md to accept, reject, move, or escalate reusable project knowledge.
+---
+
 # Update Memory Skill
 
 Use this skill to consolidate pending memory candidates into the correct long-term destination.

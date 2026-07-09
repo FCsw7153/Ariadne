@@ -67,6 +67,7 @@ Commands, tests, manual checks, or review criteria expected from the sub-agent.
 
 - The main agent should wait for this sub-agent to complete or queue non-urgent messages.
 - The main agent should not interrupt this sub-agent for status checks, impatience, minor clarifications, or low-priority hints.
+- For pi sub-agents, do not pass `timeoutMs` or `maxRuntimeMs` unless the user explicitly requests a foreground runtime limit; prefer `async: true`, status checks, queued messages, and needs-attention signals.
 - Interrupt is allowed only for explicit user redirect, harmful off-scope work, wrong handoff context, unsafe/destructive behavior, or resource control.
 - If interrupted, the main agent must record reason, evidence, replacement instruction, affected agent, and follow-up action in the task artifact.
 

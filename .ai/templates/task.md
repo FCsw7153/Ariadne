@@ -85,6 +85,7 @@ Every Level 2/3 task must record a sub-agent decision before substantive impleme
 - Sub-agent decision: pending | delegated | not-useful | unavailable-in-host | disabled-by-user | disabled-by-system-instruction
 - Rationale:
 - No-interrupt rule: wait-or-queue by default; interrupt only for explicit redirect, off-scope harmful work, wrong context, unsafe behavior, or resource control.
+- Pi runtime rule: do not pass `timeoutMs` or `maxRuntimeMs` to pi `subagent` calls unless the user explicitly requests a foreground runtime limit; prefer async/background runs plus status, queued messages, and needs-attention signals.
 
 | Role | Goal | Artifact / Output | Status |
 | --- | --- | --- | --- |

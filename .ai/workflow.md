@@ -176,6 +176,7 @@ Sub-agent guidance:
 - If the host has no sub-agent mechanism, record that as the sub-agent decision.
 - Require decision-grade return artifacts: readset, key facts, changes/findings, evidence, risks, and decisions needed.
 - Do not interrupt sub-agents by default. Wait for completion or queue a message unless the No-Interrupt Rule allows an exceptional interrupt.
+- For pi sub-agents, do not pass `timeoutMs` or `maxRuntimeMs` unless the user explicitly requests a foreground runtime limit; prefer async/background runs plus status, queued messages, and needs-attention signals.
 
 Verification:
 
@@ -227,6 +228,7 @@ Sub-agent guidance:
 - Require artifact paths or structured summaries, not raw chat dumps.
 - The main agent must inspect enough evidence to accept or reject the sub-agent output.
 - Do not interrupt sub-agents by default. Wait for completion or queue a message unless the No-Interrupt Rule allows an exceptional interrupt.
+- For pi sub-agents, do not pass `timeoutMs` or `maxRuntimeMs` unless the user explicitly requests a foreground runtime limit; prefer async/background runs plus status, queued messages, and needs-attention signals.
 
 ## No-Interrupt Rule
 
@@ -237,6 +239,7 @@ Default:
 - Wait for completion.
 - Use queued messages for low-priority additions or clarifications.
 - Use status/wait mechanisms for progress, if the host provides them.
+- In pi, avoid foreground runtime limits by default: do not pass `timeoutMs` or `maxRuntimeMs` unless the user explicitly asked for a foreground time limit.
 
 Interrupt only when:
 
